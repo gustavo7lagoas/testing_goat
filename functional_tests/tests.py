@@ -1,5 +1,6 @@
 from django.test import LiveServerTestCase
 from selenium import webdriver
+from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.common.keys import Keys
 import time
 
@@ -20,9 +21,9 @@ class NewVisitorTest(LiveServerTestCase):
                 rows = self.browser.find_elements_by_tag_name('tr')
                 self.assertIn(row_text, [row.text for row in rows])
                 return
-            except (AssertionError, WedriverException) as e:
-                if time.time() - stat_time > MAX_WAIT:
-                    raise #!/usr/bin/env python
+            except (AssertionError, WebDriverException) as e:
+                if time.time() - start_time > MAX_WAIT:
+                    raise e #!/usr/bin/env python
                 time.sleep(0.5)
 
     def test_can_start_a_list_and_retrieve_it_later(self):
@@ -66,12 +67,13 @@ class NewVisitorTest(LiveServerTestCase):
         # explanatory text to that effect
         self.fail('Finish the test!')
 
-    # He visits that URL - his to-do list is still there
+        # He visits that URL - his to-do list is still there
 
-    # Satisfied, he goes back to sleep
+        # Satisfied, he goes back to sleep
 
     def test_multiple_users_can_start_lists_at_different_urls(self):
-        # Gustavo start anew todo list
+
+        # Gustavo starts a new todo list
         self.browser.get(self.live_server_url)
         inputbox = self.browser.find_element_by_id('id_new_item')
         inputbox.send_keys('Buy peacock feathers')
@@ -86,13 +88,13 @@ class NewVisitorTest(LiveServerTestCase):
 
         ## New browser to new cookie META-COMMENT
         self.browser.quit()
-        self.browser = webdriver.Chrome
+        self.browser = webdriver.Chrome()
 
         # Fran visits the home page. There is no sign of Gustavo's
         # list
-        self.browser.get(live_server_url)
+        self.browser.get(self.live_server_url)
         page_text = self.browser.find_element_by_tag_name('body').text
-        self.assertNotIn('Buy peacoce feathers', page_text)
+        self.assertNotIn('Buy peacock feathers', page_text)
         self.assertNotIn('make a fly', page_text)
 
         # Fran starts a new list by entering a new item. She
